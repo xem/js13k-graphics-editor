@@ -1,0 +1,84 @@
+<body style=width:90vw>
+<a href=//github.com/xem/js13k-graphics-editor><img style="position:absolute;top:-18px;right:-20px;border:0;z-index:1" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+<img src=bg.png id=bg hidden>
+<b>JS13k-graphics-editor</b>
+<br>
+Replace "bg.png" to use your own model. Click to draw a new line, press any key to start a new path. Each new point is encoded on 2 ASCII chars. The max distance between two points is 64px (horizontally and vertically).
+<br>
+<br>
+<textarea cols=99 id=o readonly></textarea>
+<br>
+<br>
+<div style=position:relative>
+  <canvas id=b style="border:1px solid;background:url(bg.png);opacity:0.5"></canvas>
+  <canvas id=c style="position:absolute;top:0;left:0"></canvas>
+  <canvas id=d style="position:absolute;top:0;left:0"></canvas>
+</div>
+<br>
+<br>
+
+<script>
+
+t = c.getContext("2d");
+u = d.getContext("2d");
+last_x = 0;
+last_y = 0;
+started = 0;
+o.value = "";
+
+onclick = function(e){
+  x = ~~(e.pageX - c.getBoundingClientRect().left - document.documentElement.scrollLeft - document.body.scrollLeft);
+  y = ~~(e.pageY - c.getBoundingClientRect().top - document.documentElement.scrollTop - document.body.scrollTop);
+  if(!started){
+    started=1;
+    last_x = x;
+    last_y = y;
+    o.value+="{x:"+x+",y:"+y+",path:'";
+  }
+  else{
+    if((last_x != x || last_y != y) && Math.abs(last_x - x) < 64 && Math.abs(last_y - y) < 64){
+      t.beginPath();
+      t.moveTo(last_x, last_y);
+      t.lineTo(x,y);
+      t.stroke();
+      o.value+=(String.fromCharCode(last_x - x + 64)+String.fromCharCode(last_y - y + 64)).replace(/\r/g,"\\r").replace(/\n/g,"\\n").replace(/'/g,"\'")
+      last_x = x;
+      last_y = y;
+    }
+  }
+}
+
+onmousemove=function(e){
+  if(started){
+    d.width|=0;
+    x = ~~(e.pageX - c.getBoundingClientRect().left - document.documentElement.scrollLeft - document.body.scrollLeft);
+    y = ~~(e.pageY - c.getBoundingClientRect().top - document.documentElement.scrollTop - document.body.scrollTop);
+    if(Math.abs(last_x - x) > 64 || Math.abs(last_y - y) > 64){
+      c.style.background="red";
+    }
+    else{
+      c.style.background="";
+    }
+    u.beginPath();
+    u.moveTo(last_x, last_y);
+    u.lineTo(x,y);
+    u.stroke();
+  }
+}
+
+onkeyup=function(e){
+  if(started){
+    d.width|=0;
+    started = 0;
+    o.value+="'}\n";
+    c.style.background="";
+  }
+}
+
+onload=function(){
+  w = bg.naturalWidth;
+  h = bg.naturalHeight;
+  b.width = c.width = d.width = w;
+  b.height = c.height = d.height = h;
+}
+</script>
