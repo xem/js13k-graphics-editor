@@ -26,7 +26,7 @@ last_y = 0;
 started = 0;
 o.value = "";
 
-onclick = function(e){
+d.onclick = function(e){
   x = ~~(e.pageX - c.getBoundingClientRect().left - document.documentElement.scrollLeft - document.body.scrollLeft);
   y = ~~(e.pageY - c.getBoundingClientRect().top - document.documentElement.scrollTop - document.body.scrollTop);
   if(!started){
@@ -67,7 +67,7 @@ onmousemove=function(e){
 }
 
 onkeyup=function(e){
-  if(started){
+  if(started && !e.ctrlKey){
     d.width|=0;
     started = 0;
     o.value+="'}\n";

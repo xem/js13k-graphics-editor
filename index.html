@@ -1,14 +1,26 @@
+<a href="editor.html">Editor</a>
+<br>
 <canvas id=c width=999 height=999></canvas>
 <script>
 
-demo = {x:50,y:50,path:'?C=@<?@D;=@C=@?D=@A==@=?>>=A?>=@C=@>D<>@>?B<=>D<BAABC?C>?>DBBAB>EB>G==DFCB>BCAB?AC'};
-zoom=3;
+// Canvas context
 t = c.getContext("2d");
-t.moveTo(x=demo.x*zoom,y=demo.y*zoom);
-for(i=0;i<demo.path.length;i+=2){
-  t.lineTo(x=(demo.path.charCodeAt(i)-64)*zoom+x, y=(demo.path.charCodeAt(i+1)-64)*zoom+y);
-}
+
+// Data of the shape to draw
+d = {x:15,y:62,path:'7F5@=ELC6D5?EF H"<;;8E.A-;7<>;;I-<.H;?B9H:Z.@::?3;@17O4GBF9L3<=33G@378D;M;P@N5/G;4W<E7L=I.R3D)EQQC>:ODN4>(5?9H4BJ/4>;:C5<;8A8:<K5B+9<C54,;7-$616?7L2?/F-S:@5M*IB;6L<?6HD<3D:<;A326I?[QHgBh?YTLPa?R7OCKFCA=PGDLMDGFF>ZN<GN^FC4NTBRGG=Y2QDK<NI5:WOCc2S>.KI@'};
+
+// Zoom (scale)
+z=1.5;
+
+// Draw the shape (you can replace d.path.length with a large number, like 1e4)
+t.moveTo(x=d.x*z,y=d.y*z);for(i=0;i<d.path.length;i+=2)t.lineTo(x-=(d.path.charCodeAt(i)-64)*z,y-=(d.path.charCodeAt(i+1)-64)*z);
+
+// Optional: draw a line between last and first point
 t.closePath();
+
+// Optional: color inside the shape
 t.fill();
+
+// Optional: draw the shape
 t.stroke();
 </script>
