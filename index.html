@@ -1,29 +1,124 @@
-<!doctype html>
-<meta charset=utf-8>
-<body id=b>
-<a href="editor.html">Editor</a>
+﻿<b>JS13k-graphics-editor</b>
 <br>
-<canvas id=a width=999 height=999></canvas>
+Click to place capital / start path (the path start must be higher than the capital, with the same X) / add point, right click to start a new subpath, press space to start a new path.
+<br>
+<br>
+<textarea cols=99 id=o readonly></textarea>
+<br>
+<br>
+<div style=position:relative>
+  <canvas id=b style="border:1px solid;background:url(bg3.png) no-repeat;opacity:0.7;background-size:100%"></canvas> <!-- bg -->
+  <canvas id=c style="position:absolute;top:0;left:0"></canvas> <!-- drawn -->
+  <canvas id=d style="position:absolute;top:0;left:0"></canvas> <!-- drawing -->
+</div>
+<br>
+<br>
+
 <script>
+x = y = 0;
+t = c.getContext("2d");
+u = d.getContext("2d");
+last_x = 0;
+last_y = 0;
+capital = 0;
+started = 0;
+o.value = "";
 
-// Canvas context:
-c = a.getContext("2d");
+var getxy = function(e){
+  x = (~~(e.pageX - c.getBoundingClientRect().left - document.documentElement.scrollLeft - document.body.scrollLeft));
+  y = (~~(e.pageY - c.getBoundingClientRect().top - document.documentElement.scrollTop - document.body.scrollTop));
+}
 
-// Golf starts here:
-b.bgColor="#55F";c.fillStyle="#5F5";x=y=99;for(i of`.xwa6-kAWAwcaA6xXCm+5cwmxYzncNYLxnWDWCWW*wLydb!wcXCOW5lY-OWZ!NnPJmC-EM-C!+*yM
-b!wX6"
-DyN-zLDVbYy@bXLclVOb*Wd- ZN#7EaJc6Ud-,8NWNx*5wZ@yxzmyoynyxnyyemc#CcDqCd9N-Z-nC
-#D!C%+!'W)UYJ"5n@"H+x
-xcWmW
-Y
-
-Nyn8?"D!zNaZ8mUoEvKwM$vyepP!oZ#C[-[
-4VcLb@+D-,_C.C!p96Td.+Z.X:W|d;O_@wK5aIobDX/YbV]-ZYm[8/o:9*
-uK
-Y,*-wY.YcN+aF.;"%]c\\) /J)8
-9 9E1RfxTwxbo}zdz95M
-Y+V
-K*v""c1&ncZ1gme_vO:UXeyWS2MG1Y9dgyq]D{XQVzrX]%R;1.$R$1:[:Dg//o<Pqd^bD8 0Z	)5(2X':2LI=2K2=2'?U=U\`34!D	(
-*I'*QQ\\Q?Y*I'?Hi^3H+:5LcJ#=L5-Nd6
-"`)z=i.charCodeAt()-6,c.lineTo(x+=(~~(z/11)-5),y+=(z%11-5));c.fill()
+var inbounds = function(){
+  return (last_x != x || last_y != y) && x - last_x >= -7 * 2 && x - last_x <= 8 * 2 && y - last_y  >= -3 * 2 && y - last_y <= 4 * 2 && (((x-last_x+14)/2)<<3) + (((y-last_y+6)/2)) > 0 && (((x-last_x+14)/2)<<3) + (((y-last_y+6)/2)) < 127;
+}
+
+d.onclick = function(e){
+  getxy(e);
+  
+  // Capital click
+  if(!capital){
+    capital = 1;
+    x = ~~((~~(x / 20) * 20) / 2) * 2;
+    y = ~~((~~(y / 15) * 15) / 2) * 2;
+    last_x = x;
+    last_y = y;
+    o.value+=String.fromCharCode(x/20) + String.fromCharCode(y/15);
+  }
+  // First click = starting point; store X and Y on 1 ASCII char each. (1-126)
+  else if(!started){
+    started=1;
+    x = ~~((~~(x / 20) * 20) / 2) * 2;
+    y = ~~((~~(y / 15) * 15) / 2) * 2;
+    o.value+=String.fromCharCode(x/20) + String.fromCharCode((y - last_y)/2);
+    last_x = x;
+    last_y = y;
+  }
+  
+  // Next clicks = followin points; store both X and Y offsets on 1 ASCII char. (4 bits for X ([-7:8] * 2), 3 for Y ([-3:4] * 2))
+  else{
+    x = ~~(x/2)*2;
+    y = ~~(y/2)*2;
+    if((last_x != x || last_y != y) && x - last_x >= -7 * 2 && x - last_x <= 8 * 2 && y - last_y  >= -3 * 2 && y - last_y <= 4 * 2 && (((x-last_x+14)/2)<<3) + (((y-last_y+6)/2)) > 0 && (((x-last_x+14)/2)<<3) + (((y-last_y+6)/2)) < 127){
+      t.beginPath();
+      t.moveTo(last_x, last_y);
+      t.lineTo(x,y);
+      t.stroke();
+      o.value+=String.fromCharCode((((x-last_x+14)/2)<<3) + (((y-last_y+6)/2)))
+      last_x = x;
+      last_y = y;
+      u.rect(last_x - 7*2, last_y - 3*2, 16*2, 8*2);
+      u.stroke();
+    }
+  }
+}
+
+onmousemove = function(e){
+  getxy(e);
+  d.width|=0;
+  if(!started){
+    x = ~~((~~(x / 20) * 20) / 2) * 2;
+    y = ~~((~~(y / 15) * 15) / 2) * 2;
+    u.fillRect(x,y,10,10);
+  }
+  else{
+    x = ~~(x/2)*2;
+    y = ~~(y/2)*2;
+     if(inbounds()){
+      c.style.background="";
+    }
+    else{
+      c.style.background="red";
+    }
+    u.beginPath();
+    u.moveTo(last_x, last_y);
+    u.lineTo(x,y);
+    u.rect(last_x - 7*2, last_y - 3*2, 16*2, 8*2);
+    u.stroke();
+  }
+}
+
+onkeyup=function(e){
+  if(started && !e.ctrlKey){
+    e.preventDefault();
+    
+    // New subpath
+    if(e.keyCode == 32){
+    
+    }
+    else{
+      d.width |=0;
+      started = 0;
+      o.value+="\n";
+      c.style.background="";
+    }
+  }
+}
+
+onload=function(){
+  w = 127*20;
+  h = 127*15;
+  b.width = c.width = d.width = w;
+  b.height = c.height = d.height = h;
+}
 </script>

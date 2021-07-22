@@ -1,0 +1,29 @@
+﻿<img id=map src=sphere.jpg style=position:fixed;left:100vw;>
+<canvas id=a width=300 height=300 style=background:#000></canvas>
+<script>
+
+tmp = function(){
+  for(j=0;j<750;j+=3){
+    if(Math.abs(i/500-1) < .5){
+      globe_x = Math.sin((i/500-1) * Math.PI) * Math.cos((j/375-1) * Math.PI / 2);
+      globe_y = Math.sin((j/375-1) * Math.PI/2);
+      c.drawImage(map, (i+t*10)%1000, j, 3, 3, 150 + globe_x * 100, 150 + globe_y * 100, 3, 3);
+    }
+  }
+}
+
+onload=function(){
+  c=a.getContext("2d");
+  t=0;
+  setInterval(function(){
+    t++;
+    for(i=0;i<510;i+=3){
+      tmp();
+    }
+    
+    for(i=1000;i>500;i-=3){
+      tmp();
+    }
+  },99)
+}
+</script>

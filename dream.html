@@ -1,0 +1,58 @@
+﻿<b>JS13k-graphics-editor</b>
+<br>
+Click to place capital / start path (the path start must be higher than the capital, with the same X) / add point, right click to start a new subpath, press space to start a new path.
+<br>
+<br>
+<textarea cols=99 id=o readonly></textarea>
+<br>
+<br>
+<div style=position:relative>
+  <canvas id=c width=1270 height=207 style="background:url(akim.jpg) no-repeat;background-size:1270px"></canvas> <!-- drawn -->
+  
+</div>
+<br>
+<br>
+
+<script>
+
+ctx = x = c.getContext("2d");
+
+var getxy = function(e){
+  x = (~~(e.pageX - c.getBoundingClientRect().left - document.documentElement.scrollLeft - document.body.scrollLeft));
+  y = (~~(e.pageY - c.getBoundingClientRect().top - document.documentElement.scrollTop - document.body.scrollTop));
+}
+
+var inbounds = function(){
+  return (last_x != x || last_y != y) && x - last_x >= -7 * 10 && x - last_x <= 8 * 10 && y - last_y  >= -3 * 10 && y - last_y <= 4 * 10;
+}
+
+
+c.onclick = function(e){
+  getxy(e);
+  
+  x = ~~(x/10)*10;
+  y = ~~(y/10)*10;
+  
+  ctx.fillStyle = "rgba(0,0,0,1)";
+  ctx.fillRect(x,y,10,10);
+  o.value += "["+x/10+","+y/10+"],";
+}
+
+c.onmousemove = function(e){
+  getxy(e);
+  
+  x = ~~(x/10)*10;
+  y = ~~(y/10)*10;
+  
+  ctx.fillStyle = "rgba(255,0,0,0.25)";
+  ctx.fillStyle = "rgba(255,0,0,0.25)";
+  ctx.fillRect(x,y,10,10);
+}
+
+
+
+x=c.getContext`2d`;
+x.lineWidth=5;
+for(z of[[23,20],[0,20],[0,0],[24,0],[30,5],[31,10],[29,16],[23,20],[35,50],[35,10],[62,30],[62,20],[52,20],[52,10],[58,10],[52,10],[52,20],[67,23],[67,10],[71,10],[85,36],[85,10],[85,50],[126,20],[105,0],[105,20],[95,10]])x.lineTo(z[0]*10+5,z[1]*10+5),x.stroke();for(z=5;z--;)x.drawImage(c,0,0,1270,210,352,0,608,108);
+
+</script>
